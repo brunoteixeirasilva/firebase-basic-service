@@ -453,7 +453,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 			}
 
 			o.createdAt = input.createdAt || new Date();
-			o.createdBy = o.createdBy || "admin"; //|| firebase.auth().currentUser.uid
+			o.createdBy = o.createdBy || firebase.auth().currentUser.uid;
 
 			return o;
 		}

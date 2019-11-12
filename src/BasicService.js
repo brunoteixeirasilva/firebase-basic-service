@@ -1,13 +1,10 @@
-const firebase = require("firebase");
-require("firebase/firestore");
-
 let unsubscribes = [];
 /**
  * Keeps stored the unsubscribe functions
  * returned by firestore.onSnapshot method
  * @param {function} unsubscribe
  */
-const addUnsubscribe = unsubscribe => {
+const addUnsubscribe = (unsubscribe) => {
 	unsubscribes.push(unsubscribe);
 };
 
@@ -15,11 +12,11 @@ const addUnsubscribe = unsubscribe => {
  * Will merge the result of multiple queries
  * @param {array<array>} queries
  */
-const mergeQueryResults = queries => {
+const mergeQueryResults = (queries) => {
 	let objectMap = {};
 
-	queries.forEach(query => {
-		query.forEach(item => {
+	queries.forEach((query) => {
+		query.forEach((item) => {
 			objectMap[item.uid] = item;
 		});
 	});
@@ -40,9 +37,9 @@ const makeQuery = (query, identifier, isSnapshot, resolve) => {
 	try {
 		if (isSnapshot) {
 			const unsubscribe = query.onSnapshot(
-				snapshot => {
+				(snapshot) => {
 					let list = [];
-					snapshot.docs.forEach(doc => {
+					snapshot.docs.forEach((doc) => {
 						let c = doc.data();
 						c.uid = doc.id;
 						c.$$identifier = identifier;
@@ -51,7 +48,7 @@ const makeQuery = (query, identifier, isSnapshot, resolve) => {
 					count++;
 					resolve({ list, count, identifier });
 				},
-				err => {
+				(err) => {
 					console.log(err);
 					signOut();
 				}
@@ -60,9 +57,9 @@ const makeQuery = (query, identifier, isSnapshot, resolve) => {
 			return unsubscribe;
 		} else {
 			query.get().then(
-				snapshot => {
+				(snapshot) => {
 					let list = [];
-					snapshot.docs.forEach(doc => {
+					snapshot.docs.forEach((doc) => {
 						let c = doc.data();
 						c.uid = doc.id;
 						c.$$identifier = identifier;
@@ -71,7 +68,7 @@ const makeQuery = (query, identifier, isSnapshot, resolve) => {
 					});
 					resolve({ list, count, identifier });
 				},
-				err => console.log(err)
+				(err) => console.log(err)
 			);
 			return () => null;
 		}
@@ -86,8 +83,7 @@ const makeQuery = (query, identifier, isSnapshot, resolve) => {
 const uid = () => {
 	let date = new Date();
 	let rand = () => Math.floor(Math.random() * 3000) + 1;
-	let randInterval = (min, max) =>
-		Math.floor(Math.random() * (max - min + 1) + min);
+	let randInterval = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 	let a = date.getTime().toString(16);
 
 	date.setDate(date.getDate() + rand());
@@ -102,15 +98,12 @@ const uid = () => {
 	date.setDate(date.getDate() + rand());
 	let e = date.getTime().toString(16);
 
-	let f = a + "-" + b + "-" + c + "-" + d + "-" + e;
+	let f = a + '-' + b + '-' + c + '-' + d + '-' + e;
 	let intervals = [];
 	let length = f.length;
 	for (let i = 0; i < length - 5; i++) {
 		let index = randInterval(0, length);
-		f =
-			f.substr(0, index) +
-			f.substr(index, 1).toUpperCase() +
-			f.substr(index + 1);
+		f = f.substr(0, index) + f.substr(index, 1).toUpperCase() + f.substr(index + 1);
 	}
 	return f;
 };
@@ -185,17 +178,17 @@ const ReduxHelper = (
 
 	store.injectReducer(reducerName, reducer);
 
-	const get = item =>
+	const get = (item) =>
 		store.dispatch({
 			type: ACTION_GET_COMPLETED,
 			current: item
 		});
-	const patch = properties =>
+	const patch = (properties) =>
 		store.dispatch({
 			type: ACTION_PATCH_COMPLETED,
 			properties: properties
 		});
-	const list = list =>
+	const list = (list) =>
 		store.dispatch({
 			type: ACTION_LIST_COMPLETED,
 			list: list
@@ -225,7 +218,13 @@ const ReduxHelper = (
  * @param {object} [store] - Redux Store object. Pass it if you want to have automatic redux state control
  * @param {string} [reducerName] - Redux reducer name
  */
-const BasicService = (collection, defaultObject, store, reducerName) => {
+const BasicService = ({ firebase, collection, defaultObject, store, reducerName }) => {
+	if (!(firebase instanceof object)) throw 'Oops! "firebase" property MUST be an object.';
+	if (typeof firebase.firestore !== 'function')
+		throw 'Oops! The "firebase" object MUST contain a firestore() function.';
+	if (typeof firebase.auth !== 'function')
+		throw 'Oops! The "firebase" object MUST contain a auth() function.';
+
 	let Collection = firebase.firestore().collection(collection);
 
 	let oRedux;
@@ -234,7 +233,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 	}
 
 	const _defaults = {
-		filters: [["deleted", "==", false]]
+		filters: [['deleted', '==', false]]
 	};
 
 	let _filters = Object.assign([], _defaults.filters);
@@ -255,7 +254,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		 * If there is no "uid" prop at item, an uid will generated automatically
 		 * @param {object} item The item to be saved/replaced at firestore
 		 */
-		save: item => {
+		save: (item) => {
 			let doc;
 			if (!item.uid) {
 				doc = Collection.doc();
@@ -264,7 +263,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 				doc = Collection.doc(item.uid);
 			}
 			const finalItem = Service.createObject(item);
-			return doc.set(finalItem).then(r => {
+			return doc.set(finalItem).then((r) => {
 				return finalItem;
 			});
 		},
@@ -273,10 +272,10 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		 * Doesn't change properties that are not present at the param
 		 * @params {object} properties props to be updated
 		 */
-		patch: properties => {
+		patch: (properties) => {
 			return Collection.doc(uid)
 				.update(properties)
-				.then(result => {
+				.then((result) => {
 					if (oRedux) oRedux.actions.patch(properties);
 					return result;
 				});
@@ -285,14 +284,14 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		 * Performs a query on a single uid at firestore database
 		 * @param {string} uid identity of the object at firestore
 		 */
-		get: uid => {
+		get: (uid) => {
 			if (!uid) return Promise.resolve(false);
 			return new Promise((resolve, reject) => {
-				if (typeof unsubscribeCurrent === "function") {
+				if (typeof unsubscribeCurrent === 'function') {
 					unsubscribeCurrent();
 				}
 
-				unsubscribeCurrent = Collection.doc(uid).onSnapshot(result => {
+				unsubscribeCurrent = Collection.doc(uid).onSnapshot((result) => {
 					let data = result.data();
 					if (oRedux) oRedux.actions.get(data);
 					resolve(data);
@@ -325,7 +324,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		 * @param {array<mixed>} Array containing the filters
 		 * @param {}
 		 */
-		filter: filters => {
+		filter: (filters) => {
 			_filters = filters;
 			return this;
 		},
@@ -336,36 +335,30 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		list: (keepReduxList, isSnapshot = true) => {
 			if (!keepReduxList) {
 				if (oRedux) oRedux.actions.list([]);
-				onSnapshots.forEach(unsubscribe => {
+				onSnapshots.forEach((unsubscribe) => {
 					unsubscribe();
 				});
 				onSnapshots = [];
 			}
 
 			return new Promise((resolveA, rejectA) => {
-				let storedList = !keepReduxList
-					? []
-					: store.getState()[collection].list || [];
+				let storedList = !keepReduxList ? [] : store.getState()[collection].list || [];
 				let promises = [];
 				_filters.forEach((filter, i) => {
 					let query = Collection;
 
 					if (filter[0] instanceof Array) {
-						filter.forEach(subFilter => {
+						filter.forEach((subFilter) => {
 							if (subFilter[2] === undefined) return;
-							query = query.where(
-								subFilter[0],
-								subFilter[1],
-								subFilter[2]
-							);
+							query = query.where(subFilter[0], subFilter[1], subFilter[2]);
 						});
 					} else {
 						if (filter[2] === undefined) return;
 						query = query.where(filter[0], filter[1], filter[2]);
 					}
 
-					_orders.forEach(order => {
-						if (typeof order === "string") {
+					_orders.forEach((order) => {
+						if (typeof order === 'string') {
 							query = query.orderBy(order);
 						}
 						if (order instanceof Array) {
@@ -385,15 +378,11 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 									uuid,
 									isSnapshot,
 									({ list, count, identifier }) => {
-										storedList = storedList.filter(o => {
+										storedList = storedList.filter((o) => {
 											return o.$$identifier != identifier;
 										});
-										storedList = mergeQueryResults([
-											storedList,
-											list
-										]);
-										if (oRedux)
-											oRedux.actions.list(storedList);
+										storedList = mergeQueryResults([storedList, list]);
+										if (oRedux) oRedux.actions.list(storedList);
 
 										resolve(storedList);
 									}
@@ -405,7 +394,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 				filters = defaultFilter;
 				return Promise.all(promises)
 					.then(mergeQueryResults)
-					.then(list => {
+					.then((list) => {
 						if (oRedux) oRedux.actions.list(lists);
 						resolveA(list);
 						return list;
@@ -418,7 +407,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		 * ['name','age', ['height','desc']]
 		 * @param {array} orders
 		 */
-		order: orders => {
+		order: (orders) => {
 			_orders = orders;
 			return this;
 		},
@@ -426,7 +415,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		 * Limits the amount of rows returned by firestore query
 		 * @param {integer} limit
 		 */
-		limit: limit => {
+		limit: (limit) => {
 			_limit = limit;
 			return this;
 		},
@@ -435,7 +424,7 @@ const BasicService = (collection, defaultObject, store, reducerName) => {
 		 * the the ones passed at input
 		 * @param {object} input Item to transformed into default object pattern
 		 */
-		createObject: input => {
+		createObject: (input) => {
 			input = input || {};
 			let o = {
 				deleted: input.deleted || false

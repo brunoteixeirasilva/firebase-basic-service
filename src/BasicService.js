@@ -230,7 +230,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 
 	let oRedux;
 	if (store && store.injectReducer) {
-		oRedux = Redux(reducerName || collection, store);
+		oRedux = ReduxHelper(reducerName || collection, store);
 	}
 
 	const _defaults = {

@@ -1,4 +1,5 @@
 let unsubscribes = [];
+let onSnapshots = [];
 /**
  * Keeps stored the unsubscribe functions
  * returned by firestore.onSnapshot method
@@ -219,7 +220,7 @@ const ReduxHelper = (
  * @param {string} [reducerName] - Redux reducer name
  */
 const BasicService = ({ firebase, collection, defaultObject, store, reducerName }) => {
-	if (!(firebase instanceof object)) throw 'Oops! "firebase" property MUST be an object.';
+	if (!(typeof firebase === 'object')) throw 'Oops! "firebase" property MUST be an object.';
 	if (typeof firebase.firestore !== 'function')
 		throw 'Oops! The "firebase" object MUST contain a firestore() function.';
 	if (typeof firebase.auth !== 'function')
@@ -326,7 +327,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 */
 		filter: (filters) => {
 			_filters = filters;
-			return this;
+			return Service;
 		},
 		/**
 		 * @param {boolean} keepReduxList indicates if the redux state needs to be kept or not
@@ -391,7 +392,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 						})
 					);
 				});
-				filters = defaultFilter;
+				filters = _defaults.filters;
 				return Promise.all(promises)
 					.then(mergeQueryResults)
 					.then((list) => {
@@ -409,7 +410,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 */
 		order: (orders) => {
 			_orders = orders;
-			return this;
+			return Service;
 		},
 		/**
 		 * Limits the amount of rows returned by firestore query
@@ -417,7 +418,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 */
 		limit: (limit) => {
 			_limit = limit;
-			return this;
+			return Service;
 		},
 		/**
 		 * Fills an object will the default properties, and replace the default values
@@ -447,6 +448,10 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			return o;
 		}
 	};
+	return Service;
 };
 
-module.exports.BasicService = BasicService;
+module.exports = {
+	uid,
+	BasicService
+};

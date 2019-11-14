@@ -117,6 +117,7 @@ const uid = () => {
  */
 const ReduxHelper = (
 	reducerName,
+	store,
 	INITIAL_STATE = {
 		current: {},
 		list: []

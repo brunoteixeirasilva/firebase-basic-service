@@ -265,6 +265,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 				doc = Collection.doc(item.uid);
 			}
 			const finalItem = Service.createObject(item);
+			console.log('finalItem', finalItem);
 			return doc.set(finalItem).then((r) => {
 				return finalItem;
 			});
@@ -274,7 +275,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * Doesn't change properties that are not present at the param
 		 * @params {object} properties props to be updated
 		 */
-		patch: (uid, properties) => {
+		patch: (properties) => {
 			return Collection.doc(uid)
 				.update(properties)
 				.then((result) => {
@@ -393,11 +394,11 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 						})
 					);
 				});
-				filters = _defaults.filters;
+				_filters = _defaults.filters;
 				return Promise.all(promises)
 					.then(mergeQueryResults)
 					.then((list) => {
-						if (oRedux) oRedux.actions.list(lists);
+						if (oRedux) oRedux.actions.list(list);
 						resolveA(list);
 						return list;
 					});

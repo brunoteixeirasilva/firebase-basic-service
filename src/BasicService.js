@@ -264,6 +264,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			} else {
 				doc = Collection.doc(item.uid);
 			}
+			console.log(item.uid);
 			const finalItem = Service.createObject(item);
 			console.log('finalItem', finalItem);
 			return doc.set(finalItem).then((r) => {
@@ -433,10 +434,10 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 				deleted: input.deleted || false
 			};
 
-			for (let i in defaultObject) {
-				if (!defaultObject.hasOwnProperty(i)) continue;
-				o[i] = input[i] || defaultObject[i];
-			}
+			Object.keys(defaultObject).map((i) => {
+				if (typeof defaultObject[i] === 'function') return;
+				o[i] = normalizeProps(input[i] || defaultObject[i]);
+			});
 
 			if (input.uid) {
 				o.uid = input.uid;
@@ -452,8 +453,28 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 	};
 	return Service;
 };
+const normalizeProps = (item) => {
+	if (typeof item !== 'object' || item instanceof Date || (item && item.toDate)) return item;
+	if (item instanceof Array) {
+		let r = [];
+		item.map((v, i) => {
+			r[i] = normalizeProps(v);
+		});
+		return r;
+	} else {
+		let r = {};
+
+		Object.keys(item).map((i) => {
+			if (i === '$$identifier') return;
+			if (typeof item[i] === 'function') return;
+			r[i] = normalizeProps(item[i]);
+		});
+		return r;
+	}
+};
 
 module.exports = {
 	uid,
+	normalizeProps,
 	BasicService
 };

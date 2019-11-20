@@ -275,7 +275,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * Doesn't change properties that are not present at the param
 		 * @params {object} properties props to be updated
 		 */
-		patch: (properties) => {
+		patch: (uid, properties) => {
 			return Collection.doc(uid)
 				.update(properties)
 				.then((result) => {

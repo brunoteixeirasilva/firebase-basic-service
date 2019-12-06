@@ -1,6 +1,6 @@
 {
-	"name": "firebase-basic-service",
-	"version": "1.0.2",
+	"name": "@zerobyte/firebase-basic-service",
+	"version": "1.0.3",
 	"description": "Easy queries. Redux integration.",
 	"main": "index.js",
 	"scripts": {
@@ -16,7 +16,11 @@
 		"base",
 		"class"
 	],
-	"author": "Zerobytes",
+	"author": "Zerobyte",
+	"contributors": [
+		"guilherme.ferreira@zerobyte.app",
+		"bruno.teixeira.silva@gmail.com"
+	],
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/zerobytes/firebase-basic-service/issues"

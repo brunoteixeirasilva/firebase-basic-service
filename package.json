@@ -1,11 +1,10 @@
 {
 	"name": "@zerobytes/firebase-basic-service",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"description": "Easy queries. Redux integration.",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"publish": "npm publish --access public"
+		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
 		"type": "git",

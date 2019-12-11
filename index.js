@@ -1,5 +1,10 @@
-const BasicService = require('./src/BasicService').BasicService;
+const MOD = require('./src/BasicService');
+const BasicService = MOD.BasicService;
+const uid = MOD.uid;
+const normalizeProps = MOD.normalizeProps;
 
 module.exports = {
-	BasicService
+	BasicService,
+	normalizeProps,
+	uid
 };

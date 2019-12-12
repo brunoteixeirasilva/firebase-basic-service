@@ -452,6 +452,8 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			}
 
 			o.createdAt = input.createdAt || new Date();
+			//Picks the created by from object
+			//or the firebase logged user
 			o.createdBy = o.createdBy || firebase.auth().currentUser.uid;
 
 			return o;

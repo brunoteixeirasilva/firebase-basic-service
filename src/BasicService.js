@@ -430,6 +430,12 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 */
 		createObject: (input) => {
 			input = input || {};
+
+			//extends PlainObject - Removes non-natural/pure props
+			if (typeof input.$toPlainObject === 'function') {
+				input = input.$toPlainObject();
+			}
+
 			let o = {
 				deleted: input.deleted || false
 			};

@@ -429,24 +429,32 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * @param {object} input Item to transformed into default object pattern
 		 */
 		createObject: (input) => {
-			input = input || {};
+			let usableInput = input || {};
+
+			//extends PlainObject - Removes non-natural/pure props
+			if (typeof input.$toPlainObject === 'function') {
+				usableInput = input.$toPlainObject();
+			}
+
 			let o = {
-				deleted: input.deleted || false
+				deleted: usableInput.deleted || false
 			};
 
 			Object.keys(defaultObject).map((i) => {
 				if (typeof defaultObject[i] === 'function') return;
-				o[i] = normalizeProps(input[i] || defaultObject[i]);
+				o[i] = normalizeProps(usableInput[i] || defaultObject[i]);
 			});
 
-			if (input.uid) {
-				o.uid = input.uid;
+			if (usableInput.uid) {
+				o.uid = usableInput.uid;
 			} else {
 				delete o.uid;
 			}
 
-			o.createdAt = input.createdAt || new Date();
-			o.createdBy = o.createdBy || firebase.auth().currentUser.uid;
+			o.createdAt = usableInput.createdAt || new Date();
+			//Picks the created by from object
+			//or the firebase logged user
+			o.createdBy = usableInput.createdBy || firebase.auth().currentUser.uid;
 
 			return o;
 		}

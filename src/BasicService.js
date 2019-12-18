@@ -1,5 +1,5 @@
 let unsubscribes = [];
-let onSnapshots = [];
+let onSnapshots = {};
 /**
  * Keeps stored the unsubscribe functions
  * returned by firestore.onSnapshot method
@@ -54,7 +54,7 @@ const makeQuery = (query, identifier, isSnapshot, resolve) => {
 					signOut();
 				}
 			);
-			addUnsubscribe(unsubscribe);
+			// addUnsubscribe(unsubscribe);
 			return unsubscribe;
 		} else {
 			query.get().then(
@@ -264,9 +264,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			} else {
 				doc = Collection.doc(item.uid);
 			}
-			console.log(item.uid);
 			const finalItem = Service.createObject(item);
-			console.log('finalItem', finalItem);
 			return doc.set(finalItem).then((r) => {
 				return finalItem;
 			});
@@ -336,13 +334,14 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * @param {boolean} keepReduxList indicates if the redux state needs to be kept or not
 		 * @param {boolean} isSnapshot tells if the query needs to be onSnapshot or get, in order to receive updates passively or not
 		 */
-		list: (keepReduxList, isSnapshot = true) => {
+		list: function(keepReduxList, isSnapshot = true) {
+			onSnapshots[collection] = onSnapshots[collection] || [];
 			if (!keepReduxList) {
 				if (oRedux) oRedux.actions.list([]);
-				onSnapshots.forEach((unsubscribe) => {
+				onSnapshots[collection].forEach((unsubscribe) => {
 					unsubscribe();
 				});
-				onSnapshots = [];
+				onSnapshots[collection] = [];
 			}
 
 			return new Promise((resolveA, rejectA) => {
@@ -354,6 +353,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 					if (filter[0] instanceof Array) {
 						filter.forEach((subFilter) => {
 							if (subFilter[2] === undefined) return;
+
 							query = query.where(subFilter[0], subFilter[1], subFilter[2]);
 						});
 					} else {
@@ -374,23 +374,23 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 						limit = 1000;
 					}
 					let uuid = uid();
+
 					promises.push(
 						new Promise((resolve, reject) => {
-							onSnapshots.push(
-								makeQuery(
-									query,
-									uuid,
-									isSnapshot,
-									({ list, count, identifier }) => {
-										storedList = storedList.filter((o) => {
-											return o.$$identifier != identifier;
-										});
-										storedList = mergeQueryResults([storedList, list]);
-										if (oRedux) oRedux.actions.list(storedList);
+							onSnapshots[collection].push(
+								makeQuery(query, uuid, isSnapshot, function({
+									list,
+									count,
+									identifier
+								}) {
+									storedList = storedList.filter(function(o) {
+										return o.$$identifier != identifier;
+									});
+									storedList = mergeQueryResults([storedList, list]);
+									if (oRedux) oRedux.actions.list(storedList);
 
-										resolve(storedList);
-									}
-								)
+									resolve(storedList);
+								})
 							);
 						})
 					);

@@ -443,7 +443,11 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 
 			Object.keys(defaultObject).map((i) => {
 				if (typeof defaultObject[i] === 'function') return;
-				o[i] = normalizeProps(usableInput[i] || defaultObject[i]);
+				o[i] = normalizeProps(
+					!usableInput[i] && usableInput[i] !== false && usableInput[i] !== 0
+						? defaultObject[i] || ''
+						: usableInput[i]
+				);
 			});
 
 			if (usableInput.uid) {

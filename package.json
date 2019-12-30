@@ -1,6 +1,10 @@
 {
 	"name": "@zerobytes/firebase-basic-service",
+<<<<<<< HEAD
 	"version": "1.1.6",
+=======
+	"version": "1.1.4",
+>>>>>>> a7fd1000aed04139b43cc85edec65211ac7a2041
 	"description": "Easy queries. Redux integration.",
 	"main": "index.js",
 	"scripts": {
@@ -26,7 +30,5 @@
 		"url": "https://github.com/zerobytes/firebase-basic-service/issues"
 	},
 	"homepage": "https://github.com/zerobytes/firebase-basic-service#readme",
-	"dependencies": {
-		"@zerobytes/object-model-js": "^0.2.2"
-	}
+	"dependencies": {}
 }

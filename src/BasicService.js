@@ -276,10 +276,12 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * @params {object} properties props to be updated
 		 */
 		patch: (uid, properties) => {
+			let normalisedObject = normalizeProps(properties);
+
 			return Collection.doc(uid)
-				.update(properties)
+				.update(normalisedObject)
 				.then((result) => {
-					if (oRedux) oRedux.actions.patch(properties);
+					if (oRedux) oRedux.actions.patch(normalisedObject);
 					return result;
 				});
 		},

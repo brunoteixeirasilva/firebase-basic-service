@@ -466,6 +466,9 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 	};
 	return Service;
 };
+
+const _undesiredProps = ['$fieldConfig', '$$identifier'];
+
 const normalizeProps = (item) => {
 	if (typeof item !== 'object' || item instanceof Date || (item && item.toDate)) return item;
 	if (item instanceof Array) {
@@ -478,7 +481,7 @@ const normalizeProps = (item) => {
 		let r = {};
 
 		Object.keys(item).map((i) => {
-			if (i === '$$identifier') return;
+			if (_undesiredProps.includes(i)) return;
 			if (typeof item[i] === 'function') return;
 			r[i] = normalizeProps(item[i]);
 		});

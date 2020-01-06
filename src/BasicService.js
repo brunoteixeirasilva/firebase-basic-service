@@ -258,14 +258,21 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * @param {object} item The item to be saved/replaced at firestore
 		 */
 		save: (item) => {
-			let doc;
+			let doc, finalItem;
+
+			//Items has no ID
+			//Will create from document
 			if (!item.uid) {
 				doc = Collection.doc();
 				item.uid = doc.id;
 			} else {
+				//We will update an specific doc
 				doc = Collection.doc(item.uid);
 			}
-			const finalItem = Service.createObject(item);
+
+			//Creating an object for saving
+			finalItem = Service.createObject(item);
+
 			return doc.set(finalItem).then((r) => {
 				return finalItem;
 			});
@@ -432,14 +439,15 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * @param {object} input Item to transformed into default object pattern
 		 */
 		createObject: (input) => {
-			let usableInput = input || {};
+			let o,
+				usableInput = input || {};
 
 			//extends PlainObject - Removes non-natural/pure props
 			if (typeof input.$toPlainObject === 'function') {
 				usableInput = input.$toPlainObject();
 			}
 
-			let o = {
+			o = {
 				deleted: usableInput.deleted || false
 			};
 

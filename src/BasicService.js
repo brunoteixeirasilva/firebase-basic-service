@@ -51,7 +51,6 @@ const makeQuery = (query, identifier, isSnapshot, resolve) => {
 				},
 				(err) => {
 					console.log(err);
-					signOut();
 				}
 			);
 			// addUnsubscribe(unsubscribe);
@@ -210,6 +209,69 @@ const ReduxHelper = (
 	};
 };
 
+a = {
+	nome: 'GUilherme ferreira',
+	idade: 29,
+	amigos: ['bruno', 'filhote']
+};
+{
+	('guilherme ferreira');
+}
+
+const REMOVE_FROM_INDEX_KEY = '@@REMOVE@@_FROM_@@INDEX@@';
+const anyToString = (value) => {
+	if (typeof value === 'string') {
+		return value.toLowerCase();
+	}
+	if (typeof value === 'boolean') {
+		return REMOVE_FROM_INDEX_KEY;
+	}
+	if (value.toDate) {
+		return value.toDate().toISOString();
+	}
+	if (value._nanoseconds && value._seconds) {
+		return new Date(
+			parseInt(value._seconds + '' + (value._nanoseconds + '').substr(0, 3))
+		).toISOString();
+	}
+	if (value instanceof Date) {
+		return value.toISOString();
+	}
+	if (typeof value === 'object') {
+		let b = Object.keys(createIndex(value))
+			.join(' ')
+			.toLowerCase();
+		return b;
+	}
+	return (value + '').toLowerCase();
+};
+
+const createIndex = (input) => {
+	let values = [];
+	if (input instanceof Array) {
+		values = input;
+	}
+	if (typeof input === 'object') {
+		values = Object.values(input);
+	}
+	values = values.map((value) => {
+		return anyToString(value);
+	});
+	values = values.filter((value) => {
+		return value === REMOVE_FROM_INDEX_KEY ? false : value;
+	});
+
+	let index = {};
+	let words = values
+		.join(' ')
+		.toLowerCase()
+		.split(/\s|\t|\n|\,/g)
+		.filter((s) => !!s);
+
+	words.map((s) => (index[s] = true));
+	return index;
+};
+
 /**
  * Creates a service class that can perform crud queries at firestore
  * This service will be able to control all redux state, if wanted
@@ -272,6 +334,8 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 
 			//Creating an object for saving
 			finalItem = Service.createObject(item);
+
+			finalItem.$$index = createIndex(item);
 
 			return doc.set(finalItem).then((r) => {
 				return finalItem;

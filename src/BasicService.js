@@ -220,6 +220,9 @@ a = {
 
 const REMOVE_FROM_INDEX_KEY = '@@REMOVE@@_FROM_@@INDEX@@';
 const anyToString = (value) => {
+	if (value === undefined || value === null) {
+		return '';
+	}
 	if (typeof value === 'string') {
 		return value.toLowerCase();
 	}

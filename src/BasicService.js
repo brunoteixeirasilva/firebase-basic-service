@@ -255,7 +255,9 @@ const createIndex = (input) => {
 		values = input;
 	}
 	if (typeof input === 'object') {
-		values = Object.values(input);
+		values = Object.keys(input)
+			.filter((prop) => typeof input[prop] !== 'function' && prop !== '$fieldConfig')
+			.map((allowedProp) => input[allowedProp]);
 	}
 	values = values.map((value) => {
 		return anyToString(value);

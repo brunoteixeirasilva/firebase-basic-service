@@ -352,10 +352,22 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * @params {object} properties props to be updated
 		 */
 		patch: (uid, properties) => {
-			let normalisedObject = normalizeProps(properties);
+			let normalisedObject = normalizeProps(properties),
+				indexableObject;
 
-			return Collection.doc(uid)
-				.update(normalisedObject)
+			//TODO: rank performance
+			//Gets the original object, builds an indexable one
+			//Applies index, for updating it
+			return Service.get(uid)
+				.then((result) => {
+					indexableObject = Object.assign({}, result, normalisedObject);
+
+					//Recreating just index
+					normalisedObject.$$index = createIndex(indexableObject);
+
+					return Promise.resolve(normalisedObject);
+				})
+				.then((indexedObject) => Collection.doc(uid).update(indexedObject))
 				.then((result) => {
 					if (oRedux) oRedux.actions.patch(normalisedObject);
 					return result;

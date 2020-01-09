@@ -297,7 +297,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 	let Collection = firebase.firestore().collection(collection);
 
 	let oRedux;
-	let internalSnapshotsId = uid();
+	let internalSnapshotsId = reducerName || uid();
 	if (store && store.injectReducer) {
 		oRedux = ReduxHelper(reducerName || collection, store);
 	}
@@ -450,7 +450,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 					});
 					if (_limit > 0) {
 						query = query.limit(_limit);
-						limit = 1000;
+						_limit = 1000;
 					}
 					let uuid = uid();
 

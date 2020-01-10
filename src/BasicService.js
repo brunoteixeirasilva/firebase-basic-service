@@ -265,7 +265,7 @@ const anyToString = (value) => {
  *
  * @returns {string}
  */
-export const removeSpecialChars = (text) => {
+const removeSpecialChars = (text) => {
 	return typeof text === 'string'
 		? text
 				.normalize('NFD')

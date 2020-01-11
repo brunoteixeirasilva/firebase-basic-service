@@ -1,6 +1,6 @@
 {
 	"name": "@zerobytes/firebase-basic-service",
-	"version": "1.2.6",
+	"version": "1.2.7",
 	"description": "Easy queries. Redux integration.",
 	"main": "index.js",
 	"scripts": {

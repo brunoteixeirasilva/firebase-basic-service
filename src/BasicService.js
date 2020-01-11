@@ -606,5 +606,6 @@ const normalizeProps = (item) => {
 module.exports = {
 	uid,
 	normalizeProps,
-	BasicService
+	BasicService,
+	createIndex
 };

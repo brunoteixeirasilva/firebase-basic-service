@@ -572,7 +572,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 
 			//Getting the user from logged instance
 			if (!usableInput.createdBy && firebase.auth().currentUser !== null) {
-				usableInput.createdBy = firebase.auth().currentUser;
+				usableInput.createdBy = firebase.auth().currentUser.uid;
 			}
 
 			o.createdAt = usableInput.createdAt || new Date();

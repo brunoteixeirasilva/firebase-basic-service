@@ -555,21 +555,25 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 				);
 			});
 
-			if (usableInput.uid) {
+			if (!!usableInput && usableInput.uid) {
 				o.uid = usableInput.uid;
 			} else {
 				delete o.uid;
 			}
 
 			//Getting the user from logged instance
-			if (!usableInput.createdBy && firebase.auth().currentUser !== null) {
+			if (
+				!usableInput.createdBy &&
+				undefined !== firebase.auth().currentUser &&
+				firebase.auth().currentUser !== null
+			) {
 				usableInput.createdBy = firebase.auth().currentUser.uid;
 			}
 
 			o.createdAt = usableInput.createdAt || new Date();
 			//Picks the created by from object
 			//or the firebase logged user
-			o.createdBy = usableInput.createdBy || 'not-set';
+			o.createdBy = usableInput.createdBy !== '' ? usableInput.createdBy : 'not-set';
 
 			return o;
 		}

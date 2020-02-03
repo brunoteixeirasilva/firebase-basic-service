@@ -594,8 +594,8 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 const _undesiredProps = ['$fieldConfig', '$$identifier'];
 
 const normalizeProps = (item) => {
-	if (undefined === item || item === null || (typeof item === 'string' && item === ''))
-		return null;
+	//As of null/undef prop-values, it was crashing. added on 03/02/2020 13:21 @brunoteixeirasilva
+	if (undefined === item || item === null || (typeof item === 'string' && item === '')) return '';
 	if (typeof item !== 'object' || item instanceof Date || (item && item.toDate)) return item;
 	if (item instanceof Array) {
 		let r = [];

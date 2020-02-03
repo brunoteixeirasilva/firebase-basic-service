@@ -435,7 +435,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * 											  and valid data.
 		 */
 		filter: (filters, includeDeleted = false) => {
-			if (!filters || filters.length === 0) {
+			if (!filters || (filters instanceof Array && filters.length === 0)) {
 				return Service;
 			}
 
@@ -620,7 +620,7 @@ const normalizeProps = (item) => {
  * @param {Boolean} deletedValue
  */
 const applyDeletedFilter = (filters, deletedValue = false) => {
-	const newArray = [];
+	let newArray = [];
 
 	if (!deletedValue) {
 		if (!!filters && filters instanceof Array) {

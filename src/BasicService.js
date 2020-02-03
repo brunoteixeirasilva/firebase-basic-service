@@ -439,8 +439,9 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 				return Service;
 			}
 
-			_filters = filters;
-			// TODO: finish deleted filter _filters = !includeDeleted ? applyDeletedFilter(filters, includeDeleted) : filters;
+			// _filters = filters;
+			// TODO: finish deleted filter
+			_filters = !includeDeleted ? applyDeletedFilter(filters, includeDeleted) : filters;
 
 			return Service;
 		},

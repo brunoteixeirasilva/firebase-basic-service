@@ -622,14 +622,14 @@ const normalizeProps = (item) => {
 const applyDeletedFilter = (filters, deletedValue = false) => {
 	const newArray = [];
 
-	if (!deletedValue)
+	if (!deletedValue) {
 		if (!!filters && filters instanceof Array) {
 			newArray = [...filters];
 
-			filters.forEach((filterFirstLevel, index) => {
+			newArray.forEach((filterFirstLevel, index) => {
 				if (filterFirstLevel instanceof Array) {
 					if (filterFirstLevel.length === 3 && typeof filterFirstLevel[0] === 'string') {
-						filters[index] = [filterFirstLevel, ['deleted', '==', deletedValue]];
+						newArray[index] = [filterFirstLevel, ['deleted', '==', deletedValue]];
 					} else {
 						filterFirstLevel.forEach((filterSecondLevel, indexSecondLevel) => {
 							if (
@@ -637,7 +637,7 @@ const applyDeletedFilter = (filters, deletedValue = false) => {
 								filterSecondLevel.length === 3 &&
 								typeof filterSecondLevel[0] === 'string'
 							) {
-								filterFirstLevel[indexSecondLevel] = [
+								newArray[index][indexSecondLevel] = [
 									filterSecondLevel,
 									['deleted', '==', deletedValue]
 								];
@@ -647,6 +647,7 @@ const applyDeletedFilter = (filters, deletedValue = false) => {
 				}
 			});
 		}
+	}
 
 	console.log('applyDeletedFilter:subArray', newArray);
 

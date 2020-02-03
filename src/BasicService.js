@@ -435,13 +435,13 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * 											  and valid data.
 		 */
 		filter: (filters, includeDeleted = false) => {
-			if (!filters || filters.length) {
+			if (!filters || filters.length === 0) {
 				return Service;
 			}
 
-			_filters = filters;
+			// _filters = filters;
 			// TODO: finish deleted filter
-			// _filters = !includeDeleted ? applyDeletedFilter(filters, includeDeleted) : filters;
+			_filters = !includeDeleted ? applyDeletedFilter(filters, includeDeleted) : filters;
 
 			return Service;
 		},

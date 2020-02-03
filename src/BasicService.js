@@ -594,7 +594,8 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 const _undesiredProps = ['$fieldConfig', '$$identifier'];
 
 const normalizeProps = (item) => {
-	if (!item) return null;
+	if (undefined === item || item === null || (typeof item === 'string' && item === ''))
+		return null;
 	if (typeof item !== 'object' || item instanceof Date || (item && item.toDate)) return item;
 	if (item instanceof Array) {
 		let r = [];

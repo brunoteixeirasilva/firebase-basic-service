@@ -428,11 +428,19 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * 2 - where(ble,==,var2)
 		 * 3 - where(blo,==,var4).where(blu,==,var5)
 		 * @method filter
-		 * @param {array<mixed>} Array containing the filters
-		 * @param {}
+		 * @param {array<mixed>} filters containing the filters
+		 * @param {Boolean} includeDeleted [optional] False originally. Can be true,
+		 * 											  CAUTION! it will bring removed
+		 * 											  data on. True, gets only plain
+		 * 											  and valid data.
 		 */
-		filter: (filters) => {
-			_filters = filters;
+		filter: (filters, includeDeleted = false) => {
+			if (!filters || filters.length) {
+				return Service;
+			}
+
+			_filters = !includeDeleted ? applyDeletedFilter(filters, includeDeleted) : filters;
+
 			return Service;
 		},
 		/**
@@ -601,6 +609,46 @@ const normalizeProps = (item) => {
 		});
 		return r;
 	}
+};
+
+/**
+ * Applies a filter of non-excluded data to a query
+ *
+ * @param {Array} filters
+ * @param {Boolean} deletedValue
+ */
+const applyDeletedFilter = (filters, deletedValue = false) => {
+	const newArray = [];
+
+	if (!deletedValue)
+		if (!!filters && filters instanceof Array) {
+			newArray = [...filters];
+
+			filters.forEach((filterFirstLevel, index) => {
+				if (filterFirstLevel instanceof Array) {
+					if (filterFirstLevel.length === 3 && typeof filterFirstLevel[0] === 'string') {
+						filters[index] = [filterFirstLevel, ['deleted', '==', deletedValue]];
+					} else {
+						filterFirstLevel.forEach((filterSecondLevel, indexSecondLevel) => {
+							if (
+								filterSecondLevel instanceof Array &&
+								filterSecondLevel.length === 3 &&
+								typeof filterSecondLevel[0] === 'string'
+							) {
+								filterFirstLevel[indexSecondLevel] = [
+									filterSecondLevel,
+									['deleted', '==', deletedValue]
+								];
+							}
+						});
+					}
+				}
+			});
+		}
+
+	console.log('applyDeletedFilter:subArray', newArray);
+
+	return newArray;
 };
 
 module.exports = {

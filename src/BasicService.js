@@ -429,19 +429,19 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * 3 - where(blo,==,var4).where(blu,==,var5)
 		 * @method filter
 		 * @param {array<mixed>} filters containing the filters
-		 * @param {Boolean} includeDeleted [optional] False originally. Can be true,
+		 * TODO: @param {Boolean} includeDeleted [optional] False originally. Can be true,
 		 * 											  CAUTION! it will bring removed
 		 * 											  data on. True, gets only plain
 		 * 											  and valid data.
 		 */
-		filter: (filters, includeDeleted = false) => {
+		filter: (filters) => {
 			if (!filters || (filters instanceof Array && filters.length === 0)) {
 				return Service;
 			}
 
-			// _filters = filters;
-			// TODO: finish deleted filter
-			_filters = !includeDeleted ? applyDeletedFilter(filters, includeDeleted) : filters;
+			_filters = filters;
+			// TODO: finish studying deleted filter cases
+			// _filters = !includeDeleted ? applyDeletedFilter(filters, includeDeleted) : filters;
 
 			return Service;
 		},
@@ -613,46 +613,46 @@ const normalizeProps = (item) => {
 	}
 };
 
-/**
- * Applies a filter of non-excluded data to a query
- *
- * @param {Array} filters
- * @param {Boolean} deletedValue
- */
-const applyDeletedFilter = (filters, deletedValue = false) => {
-	let newArray = [];
+// /** TODO: study this case better
+//  * Applies a filter of non-excluded data to a query
+//  *
+//  * @param {Array} filters
+//  * @param {Boolean} deletedValue
+//  */
+// const applyDeletedFilter = (filters, deletedValue = false) => {
+// 	let newArray = [];
 
-	if (!deletedValue) {
-		if (!!filters && filters instanceof Array) {
-			newArray = [...filters];
+// 	if (!deletedValue) {
+// 		if (!!filters && filters instanceof Array) {
+// 			newArray = [...filters];
 
-			newArray.forEach((filterFirstLevel, index) => {
-				if (filterFirstLevel instanceof Array) {
-					if (filterFirstLevel.length === 3 && typeof filterFirstLevel[0] === 'string') {
-						newArray[index] = [filterFirstLevel, ['deleted', '==', deletedValue]];
-					} else {
-						filterFirstLevel.forEach((filterSecondLevel, indexSecondLevel) => {
-							if (
-								filterSecondLevel instanceof Array &&
-								filterSecondLevel.length === 3 &&
-								typeof filterSecondLevel[0] === 'string'
-							) {
-								newArray[index][indexSecondLevel] = [
-									filterSecondLevel,
-									['deleted', '==', deletedValue]
-								];
-							}
-						});
-					}
-				}
-			});
-		}
-	}
+// 			newArray.forEach((filterFirstLevel, index) => {
+// 				if (filterFirstLevel instanceof Array) {
+// 					if (filterFirstLevel.length === 3 && typeof filterFirstLevel[0] === 'string') {
+// 						newArray[index] = [filterFirstLevel, ['deleted', '==', deletedValue]];
+// 					} else {
+// 						filterFirstLevel.forEach((filterSecondLevel, indexSecondLevel) => {
+// 							if (
+// 								filterSecondLevel instanceof Array &&
+// 								filterSecondLevel.length === 3 &&
+// 								typeof filterSecondLevel[0] === 'string'
+// 							) {
+// 								newArray[index][indexSecondLevel] = [
+// 									filterSecondLevel,
+// 									['deleted', '==', deletedValue]
+// 								];
+// 							}
+// 						});
+// 					}
+// 				}
+// 			});
+// 		}
+// 	}
 
-	console.log('applyDeletedFilter:subArray', newArray);
+// 	console.log('applyDeletedFilter:subArray', newArray);
 
-	return newArray;
-};
+// 	return newArray;
+// };
 
 module.exports = {
 	uid,

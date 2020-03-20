@@ -215,6 +215,7 @@ const anyToString = (value) => {
 		return '';
 	}
 	if (typeof value === 'string') {
+		if (value.length > 50) return '';
 		return value.toLowerCase();
 	}
 	if (typeof value === 'boolean') {
@@ -272,7 +273,12 @@ const createIndex = (input) => {
 	}
 	if (typeof input === 'object') {
 		values = Object.keys(input)
-			.filter((prop) => typeof input[prop] !== 'function' && prop !== '$fieldConfig')
+			.filter(
+				(prop) =>
+					typeof input[prop] !== 'function' &&
+					prop !== '$fieldConfig' &&
+					prop !== '$$index'
+			)
 			.map((allowedProp) => input[allowedProp]);
 	}
 	values = values.map((value) => {

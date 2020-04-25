@@ -119,7 +119,7 @@ const ReduxHelper = (
 	store,
 	INITIAL_STATE = {
 		current: {},
-		list: []
+		list: [],
 	}
 ) => {
 	let reduxprefix = `APP_${new Date().getTime()}`;
@@ -141,36 +141,36 @@ const ReduxHelper = (
 			case ACTION_SET_CURRENT:
 				return {
 					...state,
-					current: action.current
+					current: action.current,
 				};
 			case ACTION_GET_COMPLETED:
 				return {
 					...state,
-					current: action.current
+					current: action.current,
 				};
 			case ACTION_LIST_COMPLETED:
 				return {
 					...state,
-					list: action.list
+					list: action.list,
 				};
 			case ACTION_PATCH_COMPLETED:
 				let current = {
 					...state.current,
-					...action.properties
+					...action.properties,
 				};
 
 				return {
 					...state,
-					current: current
+					current: current,
 				};
 			case ACTION_SAVE_COMPLETED:
 				return {
 					...state,
-					current: action.current
+					current: action.current,
 				};
 			case ACTION_DELETE_COMPLETED:
 				return {
-					...state
+					...state,
 				};
 			default:
 				return state;
@@ -182,17 +182,17 @@ const ReduxHelper = (
 	const get = (item) =>
 		store.dispatch({
 			type: ACTION_GET_COMPLETED,
-			current: item
+			current: item,
 		});
 	const patch = (properties) =>
 		store.dispatch({
 			type: ACTION_PATCH_COMPLETED,
-			properties: properties
+			properties: properties,
 		});
 	const list = (list) =>
 		store.dispatch({
 			type: ACTION_LIST_COMPLETED,
-			list: list
+			list: list,
 		});
 
 	return {
@@ -204,8 +204,8 @@ const ReduxHelper = (
 			ACTION_PATCH_COMPLETED,
 			ACTION_LIST_COMPLETED,
 			ACTION_DELETE_COMPLETED,
-			ACTION_SET_CURRENT
-		}
+			ACTION_SET_CURRENT,
+		},
 	};
 };
 
@@ -221,6 +221,7 @@ const anyToString = (value) => {
 	if (typeof value === 'boolean') {
 		return REMOVE_FROM_INDEX_KEY;
 	}
+
 	if (value.toDate) {
 		return value.toDate().toISOString();
 	}
@@ -233,9 +234,7 @@ const anyToString = (value) => {
 		return value.toISOString();
 	}
 	if (typeof value === 'object') {
-		let b = Object.keys(createIndex(value))
-			.join(' ')
-			.toLowerCase();
+		let b = Object.keys(createIndex(value)).join(' ').toLowerCase();
 		return b;
 	}
 	return (value + '').toLowerCase();
@@ -323,7 +322,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 	}
 
 	const _defaults = {
-		filters: [['deleted', '==', false]]
+		filters: [['deleted', '==', false]],
 	};
 
 	let _filters = Object.assign([], _defaults.filters);
@@ -344,7 +343,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * If there is no "uid" prop at item, an uid will generated automatically
 		 * @param {object} item The item to be saved/replaced at firestore
 		 */
-		save: (item) => {
+		save: (item, noIndex) => {
 			let doc, finalItem;
 
 			//Items has no ID
@@ -359,8 +358,11 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 
 			//Creating an object for saving
 			finalItem = Service.createObject(item);
-
-			finalItem.$$index = createIndex(item);
+			if (!noIndex) {
+				finalItem.$$index = createIndex(item);
+			} else {
+				delete finalItem.$$index;
+			}
 
 			return doc.set(finalItem).then((r) => {
 				return finalItem;
@@ -455,7 +457,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 		 * @param {boolean} keepReduxList indicates if the redux state needs to be kept or not
 		 * @param {boolean} isSnapshot tells if the query needs to be onSnapshot or get, in order to receive updates passively or not
 		 */
-		list: function(keepReduxList, isSnapshot = true) {
+		list: function (keepReduxList, isSnapshot = true) {
 			onSnapshots[internalSnapshotsId] = onSnapshots[internalSnapshotsId] || [];
 			if (!keepReduxList) {
 				if (oRedux) oRedux.actions.list([]);
@@ -499,12 +501,12 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 					promises.push(
 						new Promise((resolve, reject) => {
 							onSnapshots[internalSnapshotsId].push(
-								makeQuery(query, uuid, isSnapshot, function({
+								makeQuery(query, uuid, isSnapshot, function ({
 									list,
 									count,
-									identifier
+									identifier,
 								}) {
-									storedList = storedList.filter(function(o) {
+									storedList = storedList.filter(function (o) {
 										return o.$$identifier != identifier;
 									});
 									storedList = mergeQueryResults([storedList, list]);
@@ -559,7 +561,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			}
 
 			o = {
-				deleted: usableInput.deleted || false
+				deleted: usableInput.deleted || false,
 			};
 
 			Object.keys(defaultObject).map((i) => {
@@ -592,7 +594,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			o.createdBy = usableInput.createdBy !== '' ? usableInput.createdBy : 'not-set';
 
 			return o;
-		}
+		},
 	};
 	return Service;
 };
@@ -666,5 +668,5 @@ module.exports = {
 	uid,
 	normalizeProps,
 	BasicService,
-	createIndex
+	createIndex,
 };

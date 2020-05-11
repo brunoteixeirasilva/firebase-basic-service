@@ -119,7 +119,7 @@ const ReduxHelper = (
 	store,
 	INITIAL_STATE = {
 		current: {},
-		list: [],
+		list: []
 	}
 ) => {
 	let reduxprefix = `APP_${new Date().getTime()}`;
@@ -141,36 +141,36 @@ const ReduxHelper = (
 			case ACTION_SET_CURRENT:
 				return {
 					...state,
-					current: action.current,
+					current: action.current
 				};
 			case ACTION_GET_COMPLETED:
 				return {
 					...state,
-					current: action.current,
+					current: action.current
 				};
 			case ACTION_LIST_COMPLETED:
 				return {
 					...state,
-					list: action.list,
+					list: action.list
 				};
 			case ACTION_PATCH_COMPLETED:
 				let current = {
 					...state.current,
-					...action.properties,
+					...action.properties
 				};
 
 				return {
 					...state,
-					current: current,
+					current: current
 				};
 			case ACTION_SAVE_COMPLETED:
 				return {
 					...state,
-					current: action.current,
+					current: action.current
 				};
 			case ACTION_DELETE_COMPLETED:
 				return {
-					...state,
+					...state
 				};
 			default:
 				return state;
@@ -182,17 +182,17 @@ const ReduxHelper = (
 	const get = (item) =>
 		store.dispatch({
 			type: ACTION_GET_COMPLETED,
-			current: item,
+			current: item
 		});
 	const patch = (properties) =>
 		store.dispatch({
 			type: ACTION_PATCH_COMPLETED,
-			properties: properties,
+			properties: properties
 		});
 	const list = (list) =>
 		store.dispatch({
 			type: ACTION_LIST_COMPLETED,
-			list: list,
+			list: list
 		});
 
 	return {
@@ -204,8 +204,8 @@ const ReduxHelper = (
 			ACTION_PATCH_COMPLETED,
 			ACTION_LIST_COMPLETED,
 			ACTION_DELETE_COMPLETED,
-			ACTION_SET_CURRENT,
-		},
+			ACTION_SET_CURRENT
+		}
 	};
 };
 
@@ -322,7 +322,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 	}
 
 	const _defaults = {
-		filters: [['deleted', '==', false]],
+		filters: [['deleted', '==', false]]
 	};
 
 	let _filters = Object.assign([], _defaults.filters);
@@ -392,7 +392,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 				.then((indexedObject) => Collection.doc(uid).update(indexedObject))
 				.then((result) => {
 					if (oRedux) oRedux.actions.patch(normalisedObject);
-					return result;
+					return normalisedObject;
 				});
 		},
 		/**
@@ -504,7 +504,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 								makeQuery(query, uuid, isSnapshot, function ({
 									list,
 									count,
-									identifier,
+									identifier
 								}) {
 									storedList = storedList.filter(function (o) {
 										return o.$$identifier != identifier;
@@ -561,7 +561,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			}
 
 			o = {
-				deleted: usableInput.deleted || false,
+				deleted: usableInput.deleted || false
 			};
 
 			Object.keys(defaultObject).map((i) => {
@@ -594,7 +594,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 			o.createdBy = usableInput.createdBy !== '' ? usableInput.createdBy : 'not-set';
 
 			return o;
-		},
+		}
 	};
 	return Service;
 };
@@ -668,5 +668,5 @@ module.exports = {
 	uid,
 	normalizeProps,
 	BasicService,
-	createIndex,
+	createIndex
 };

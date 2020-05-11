@@ -524,7 +524,7 @@ const BasicService = ({ firebase, collection, defaultObject, store, reducerName 
 					.then((list) => {
 						if (oRedux) oRedux.actions.list(list);
 						resolveA(list);
-						return list;
+						return Promise.resolve(list);
 					});
 			});
 		},
